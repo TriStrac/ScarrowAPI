@@ -1,0 +1,35 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Scarrow API",
+    "version": "1.0.0",
+    "description": "API documentation for Scarrow"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health check",
+        "description": "Returns a simple message indicating the API is running",
+        "responses": {
+          "200": {
+            "description": "API is running",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Scarrow API is running"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
