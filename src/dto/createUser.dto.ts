@@ -5,6 +5,7 @@ export const CreateUserSchema = z.object({
   password: z.string().min(6),
   isUserInGroup: z.boolean(),
   isUserHead: z.boolean(),
+  isDeleted: z.boolean().default(false),
   address: z.object({
     streetName: z.string(),
     baranggay: z.string(),

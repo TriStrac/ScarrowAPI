@@ -78,7 +78,7 @@ export class UserService {
     const userData = userDoc.data();
     const isMatch = await bcrypt.compare(password, userData.password);
     if (!isMatch) return null;
-    return { userId: userDoc.id, ...userData };
+    return { userId: userDoc.id, email: userData.email, ...userData };
   }
 
   // Change password by email (exclude soft-deleted)
@@ -113,5 +113,11 @@ export class UserService {
   static async getAllDeletedUsers() {
     const snapshot = await db.collection("deletedUsers").get();
     return snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
+  }
+
+  // Check if email exists (exclude soft-deleted)
+  static async doesEmailExist(email: string): Promise<boolean> {
+    const snapshot = await db.collection("users").where("email", "==", email).where("isDeleted", "==", false).get();
+    return !snapshot.empty;
   }
 }

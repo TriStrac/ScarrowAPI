@@ -1,6 +1,8 @@
 
 import { Router } from "express";
 import { UserController } from "../controllers";
+import { authenticateJWT } from "../middlewares";
+import { userActivityLogger } from "../middlewares";
 
 const router = Router();
 
@@ -10,6 +12,7 @@ const router = Router();
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -77,6 +80,8 @@ router.post("/", UserController.createUser);
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of users
@@ -89,14 +94,16 @@ router.post("/", UserController.createUser);
  *       500:
  *         description: Internal server error
  */
-router.get("/", UserController.getAllUsers);
+router.get("/", authenticateJWT, userActivityLogger("Accounts", "Retrieved All Accounts"), UserController.getAllUsers);
 
 /**
  * @swagger
- * /api/users/by-email:
+ * /api/users/byEmail:
  *   get:
  *     summary: Get user by email
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: email
@@ -118,7 +125,7 @@ router.get("/", UserController.getAllUsers);
  *       500:
  *         description: Internal server error
  */
-router.get("/by-email", UserController.getUserByEmail);
+router.get("/byEmail", authenticateJWT, userActivityLogger("Accounts", "Retrieved by email"), UserController.getUserByEmail);
 
 /**
  * @swagger
@@ -126,6 +133,8 @@ router.get("/by-email", UserController.getUserByEmail);
  *   patch:
  *     summary: Update user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -158,7 +167,7 @@ router.get("/by-email", UserController.getUserByEmail);
  *       500:
  *         description: Internal server error
  */
-router.patch("/:userId", UserController.updateUserByID);
+router.patch("/:userId", authenticateJWT, userActivityLogger("Accounts", "Retrieved by UserId"), UserController.updateUserByID);
 
 /**
  * @swagger
@@ -166,6 +175,7 @@ router.patch("/:userId", UserController.updateUserByID);
  *   post:
  *     summary: Login user
  *     tags: [Users]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -199,14 +209,16 @@ router.patch("/:userId", UserController.updateUserByID);
  *       500:
  *         description: Internal server error
  */
-router.post("/login", UserController.loginUser);
+router.post("/login", userActivityLogger("Accounts", "Logged In"), UserController.loginUser);
 
 /**
  * @swagger
- * /api/users/change-password:
+ * /api/users/changePassword:
  *   post:
  *     summary: Change user password
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -241,14 +253,16 @@ router.post("/login", UserController.loginUser);
  *       500:
  *         description: Internal server error
  */
-router.post("/change-password", UserController.changePassword);
+router.post("/changePassword", authenticateJWT, userActivityLogger("Accounts", "Password Changed"), UserController.changePassword);
 
 /**
  * @swagger
- * /api/users/{userId}/soft-delete:
+ * /api/users/{userId}/softDelete:
  *   patch:
  *     summary: Soft delete user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -273,7 +287,7 @@ router.post("/change-password", UserController.changePassword);
  *       500:
  *         description: Internal server error
  */
-router.patch("/:userId/soft-delete", UserController.softDeleteUserByID);
+router.patch("/:userId/softDelete", authenticateJWT, userActivityLogger("Accounts", "Deleted an Account"), UserController.softDeleteUserByID);
 
 /**
  * @swagger
@@ -281,6 +295,8 @@ router.patch("/:userId/soft-delete", UserController.softDeleteUserByID);
  *   get:
  *     summary: Get all deleted users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of deleted users
@@ -293,7 +309,39 @@ router.patch("/:userId/soft-delete", UserController.softDeleteUserByID);
  *       500:
  *         description: Internal server error
  */
-router.get("/deleted", UserController.getAllDeletedUsers);
+router.get("/deleted",authenticateJWT, userActivityLogger("Accounts", "Retrieved Deleted Users"), UserController.getAllDeletedUsers);
+
+/**
+ * @swagger
+ * /api/users/emailExists:
+ *   get:
+ *     summary: Check if email exists (not deleted)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: User email to check
+ *     responses:
+ *       200:
+ *         description: Email existence result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 exists:
+ *                   type: boolean
+ *       400:
+ *         description: Email is required
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/emailExists", authenticateJWT, UserController.checkEmailExists);
 
 export default router;
 

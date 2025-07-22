@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { swaggerSpec } from './utils'
 import { errorHandler } from './middlewares';
 import userRoutes from "./routes/user.route";
+import userActivityLogRoutes from "./routes/userActivityLog.route";
 
 
 dotenv.config()
@@ -13,6 +14,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use("/api/users", userRoutes);
+app.use("/api/userActivityLogs", userActivityLogRoutes);
 
 
 app.use('/api-docs', swaggerSpec.serve, swaggerSpec.setup);

@@ -5,4 +5,6 @@ export interface IUser {
     isUserInGroup: boolean;
     isUserHead: boolean;
     email: string;
+    password?: string;
+    isDeleted: boolean;
 }

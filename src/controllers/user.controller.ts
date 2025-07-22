@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CreateUserSchema } from "../dto";
 import { UserService } from "../services";
+import jwt from "jsonwebtoken";
 
 export class UserController {
   static async createUser(req: Request, res: Response) {
@@ -63,7 +64,19 @@ export class UserController {
       }
       const user = await UserService.loginUser(email, password);
       if (!user) return res.status(401).json({ success: false });
-      res.status(200).json({ success: true, userId: user.userId });
+
+      (req as any).user = { id: user.userId };
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          userId: user.userId,
+          email: user.email,
+          loginTime: Date.now()
+        },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "30m" }
+      );
+      res.status(200).json({ success: true, token });
     } catch (err) {
       res.status(500).json({ success: false, error: "Internal server error" });
     }
@@ -98,6 +111,19 @@ export class UserController {
     try {
       const users = await UserService.getAllDeletedUsers();
       res.status(200).json(users);
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  static async checkEmailExists(req: Request, res: Response) {
+    try {
+      const { email } = req.query;
+      if (!email || typeof email !== "string") {
+        return res.status(400).json({ error: "Email is required as query param" });
+      }
+      const exists = await UserService.doesEmailExist(email);
+      res.status(200).json({ exists });
     } catch (err) {
       res.status(500).json({ error: "Internal server error" });
     }
