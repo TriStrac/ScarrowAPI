@@ -1,2 +1,3 @@
 export * from "./user.service";
 export * from "./userActivityLog.service";
+export * from "./group.service";
