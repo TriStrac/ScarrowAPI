@@ -1,4 +1,4 @@
-export interface UserActivityLog {
+export interface IUserActivityLog {
     UserActivityLogID: string;
     ActivityClass: string;
     ActivityType: string; 
