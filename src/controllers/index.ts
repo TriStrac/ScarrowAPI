@@ -1,3 +1,4 @@
-export { UserController } from "./user.controller";
-export { UserActivityLogController } from "./userActivityLog.controller";
-export { GroupController } from "./group.controller";
+export * from "./user.controller";
+export * from "./userActivityLog.controller";
+export * from "./group.controller";
+export * from "./device.controller";

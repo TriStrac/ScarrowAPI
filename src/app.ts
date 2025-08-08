@@ -5,7 +5,9 @@ import { swaggerSpec } from './utils'
 import { errorHandler } from './middlewares';
 import userRoutes from "./routes/user.route";
 import groupRoutes from "./routes/group.route";
+import deviceRoutes from "./routes/device.route";
 import userActivityLogRoutes from "./routes/userActivityLog.route";
+
 
 
 dotenv.config()
@@ -16,8 +18,9 @@ app.use(express.json())
 
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
-app.use("/api/userActivityLogs", userActivityLogRoutes);
+app.use("/api/devices", deviceRoutes);
 
+app.use("/api/userActivityLogs", userActivityLogRoutes);
 
 app.use('/api-docs', swaggerSpec.serve, swaggerSpec.setup);
 app.use(errorHandler);
