@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import { CreateGroupSchema, UpdateGroupSchema } from "../dto/group.dto";
-import { GroupService } from "../services/group.service";
+import { GroupService } from "../services";
 
 export class GroupController {
-    //create a function for all service methods in GroupService
     static async createGroup(req: Request, res: Response) {
         try {
             const parsed = CreateGroupSchema.parse(req.body);
