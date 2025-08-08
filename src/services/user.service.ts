@@ -95,23 +95,18 @@ export class UserService {
   // Soft delete user by ID
   static async softDeleteUserByID(userId: string) {
     const userRef = db.collection("users").doc(userId);
-    // Get the user data before updating
     const userDoc = await userRef.get();
     if (!userDoc.exists) return { userId };
-    const userData = userDoc.data();
-    // Prepare deleted user data
-    const deletedUserData = { ...userData, isDeleted: true, deletedAt: new Date().toISOString() };
-    // Move to deletedUsers collection
-    const deletedUserRef = db.collection("deletedUsers").doc(userId);
-    await deletedUserRef.set(deletedUserData);
-    // Delete from users collection
-    await userRef.delete();
+    await userRef.update({
+      isDeleted: true,
+      deletedAt: new Date().toISOString()
+    });
     return { userId };
   }
 
   // Get all deleted users
   static async getAllDeletedUsers() {
-    const snapshot = await db.collection("deletedUsers").get();
+    const snapshot = await db.collection("users").where("isDeleted", "==", true).get();
     return snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
   }
 

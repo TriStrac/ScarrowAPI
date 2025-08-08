@@ -81,19 +81,18 @@ export class GroupService {
         const groupSnapshot = await groupRef.get();
 
         if (!groupSnapshot.exists) {
-        throw new Error("GROUP_NOT_FOUND");
+            throw new Error("GROUP_NOT_FOUND");
         }
 
-        const deletedGroupData = { ...groupSnapshot.data(), isDeleted: true, DateUpdated: new Date().toISOString() };
-        const deletedGroupRef = db.collection("deletedGroups").doc(groupId);
-
-        await deletedGroupRef.set(deletedGroupData);
-        await groupRef.delete();
+        await groupRef.update({
+            isDeleted: true,
+            DateUpdated: new Date().toISOString()
+        });
 
         return { groupId, message: "Group soft deleted successfully." };
     }
 
-static async addGroupMember(groupId: string, userEmail: string) {
+    static async addGroupMember(groupId: string, userEmail: string) {
         const groupRef = db.collection("groups").doc(groupId);
         const groupSnapshot = await groupRef.get();
 
@@ -149,7 +148,6 @@ static async addGroupMember(groupId: string, userEmail: string) {
         return { groupId, userId, message: "User removed from group successfully." };
     }
 
-    //get all members of a group with their names and join dates
     static async getGroupMembers(groupId: string) {
         const groupMemberSnapshot = await db.collection("groupMembers")
         .where("GroupID", "==", groupId)
