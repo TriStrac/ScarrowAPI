@@ -2,6 +2,9 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const PORT = process.env.PORT || 5000;
+const API_URL = process.env.API_URL || `http://localhost:${PORT}`;
+const isDocker = process.env.IS_DOCKER === 'true';
+const apiFiles = isDocker ? ['./dist/routes/*.js'] : ['./src/routes/*.ts'];
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -12,7 +15,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:${PORT}`,
+      url: API_URL,
     },
   ],
   components: {
@@ -33,10 +36,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: [
-    './src/routes/*.ts',
-    './src/controllers/*.ts',
-  ],
+  apis: apiFiles,
 };
 
 const swaggerSpecDoc = swaggerJSDoc(options);
