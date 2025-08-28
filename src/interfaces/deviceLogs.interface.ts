@@ -2,7 +2,7 @@ export interface IDeviceLogs{
     DeviceLogsID: string;
     DeviceID: string;
     Timestamp: Date;
-    ActiveDuration: number;
+    ActiveDuration?: number;
     PestType: string;
     FendType: string;
 }

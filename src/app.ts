@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.route";
 import groupRoutes from "./routes/group.route";
 import deviceRoutes from "./routes/device.route";
 import userActivityLogRoutes from "./routes/userActivityLog.route";
+import deviceLogsRoutes from "./routes/deviceLogs.route";
 
 
 
@@ -19,6 +20,7 @@ app.use(express.json())
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/devices", deviceRoutes);
+app.use("/api/deviceLogs", deviceLogsRoutes);
 
 app.use("/api/userActivityLogs", userActivityLogRoutes);
 
