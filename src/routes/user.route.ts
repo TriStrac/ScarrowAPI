@@ -237,8 +237,7 @@ router.post("/login", userActivityLogger("Accounts", "Logged In"), UserControlle
  *   post:
  *     summary: Change user password
  *     tags: [Users]
- *     security:
- *       - bearerAuth: []
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -274,7 +273,6 @@ router.post("/login", userActivityLogger("Accounts", "Logged In"), UserControlle
  *       401:
  *         description: Old password is incorrect
  *       404:
- *         description: User not found
  *         description: User not found
  *       500:
  *         description: Internal server error
