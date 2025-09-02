@@ -30,13 +30,13 @@ export class UserController {
     }
   }
 
-  static async getUserByEmail(req: Request, res: Response) {
+  static async getUserById(req: Request, res: Response) {
     try {
-      const { email } = req.query;
-      if (!email || typeof email !== "string") {
-        return res.status(400).json({ error: "Email is required as query param" });
+      const { userId } = req.params;
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
       }
-      const user = await UserService.getUserByEmail(email);
+      const user = await UserService.getUserById(userId);
       if (!user) return res.status(404).json({ error: "User not found" });
       res.status(200).json(user);
     } catch (err) {

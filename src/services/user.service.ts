@@ -54,13 +54,14 @@ export class UserService {
     return snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
   }
 
-  // Get user by email (exclude soft-deleted) with address and profile
-  static async getUserByEmail(email: string) {
-    const snapshot = await db.collection("users").where("email", "==", email).where("isDeleted", "==", false).get();
-    if (snapshot.empty) return null;
+  // Get user by ID (exclude soft-deleted) with address and profile
+  static async getUserById(userId: string) {
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
     
-    const doc = snapshot.docs[0];
-    const userData = doc.data();
+    if (!userDoc.exists) return null;
+    const userData = userDoc.data();
+    if (!userData || userData.isDeleted) return null;
     
     // Fetch address data
     const addressDoc = await db.collection("addresses").doc(userData.addressId).get();
@@ -71,7 +72,7 @@ export class UserService {
     const profileData = profileDoc.exists ? profileDoc.data() : null;
     
     return {
-      userId: doc.id,
+      userId: userDoc.id,
       ...userData,
       address: addressData,
       profile: profileData

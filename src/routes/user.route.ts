@@ -97,34 +97,41 @@ router.get("/", authenticateJWT, userActivityLogger("Accounts", "Retrieved All A
 
 /**
  * @swagger
- * /api/users/byEmail:
+ * /api/users/{userId}:
  *   get:
- *     summary: Get user by email
+ *     summary: Get user by ID
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: email
+ *       - in: path
+ *         name: userId
  *         schema:
  *           type: string
  *         required: true
- *         description: User email
+ *         description: User ID
  *     responses:
  *       200:
  *         description: User found
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/User'
+ *                 - type: object
+ *                   properties:
+ *                     address:
+ *                       $ref: '#/components/schemas/Address'
+ *                     profile:
+ *                       $ref: '#/components/schemas/Profile'
  *       400:
- *         description: Email is required
+ *         description: User ID is required
  *       404:
  *         description: User not found
  *       500:
  *         description: Internal server error
  */
-router.get("/byEmail", authenticateJWT, userActivityLogger("Accounts", "Retrieved by email"), UserController.getUserByEmail);
+router.get("/:userId", authenticateJWT, userActivityLogger("Accounts", "Retrieved by ID"), UserController.getUserById);
 
 /**
  * @swagger
