@@ -54,12 +54,28 @@ export class UserService {
     return snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
   }
 
-  // Get user by email (exclude soft-deleted)
+  // Get user by email (exclude soft-deleted) with address and profile
   static async getUserByEmail(email: string) {
     const snapshot = await db.collection("users").where("email", "==", email).where("isDeleted", "==", false).get();
     if (snapshot.empty) return null;
+    
     const doc = snapshot.docs[0];
-    return { userId: doc.id, ...doc.data() };
+    const userData = doc.data();
+    
+    // Fetch address data
+    const addressDoc = await db.collection("addresses").doc(userData.addressId).get();
+    const addressData = addressDoc.exists ? addressDoc.data() : null;
+    
+    // Fetch profile data
+    const profileDoc = await db.collection("profiles").doc(userData.profileId).get();
+    const profileData = profileDoc.exists ? profileDoc.data() : null;
+    
+    return {
+      userId: doc.id,
+      ...userData,
+      address: addressData,
+      profile: profileData
+    };
   }
 
   // Update user by ID
