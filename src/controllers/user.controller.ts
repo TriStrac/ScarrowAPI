@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateUserSchema } from "../dto";
+import { CreateUserSchema, UpdateUserInfoSchema } from "../dto";
 import { UserService } from "../services";
 import jwt from "jsonwebtoken";
 
@@ -48,10 +48,18 @@ export class UserController {
     try {
       const { userId } = req.params;
       if (!userId) return res.status(400).json({ error: "userId param is required" });
-      const updateData = req.body;
-      const updatedUser = await UserService.updateUserByID(userId, updateData);
+      
+      const result = UpdateUserInfoSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.issues });
+      }
+
+      const updatedUser = await UserService.updateUserByID(userId, result.data);
+      if (!updatedUser) return res.status(404).json({ error: "User not found" });
+      
       res.status(200).json(updatedUser);
     } catch (err) {
+      console.error(err);
       res.status(500).json({ error: "Internal server error" });
     }
   }

@@ -1,5 +1,5 @@
 import { db } from "../utils";
-import { CreateUserDTO } from "../dto";
+import { CreateUserDTO, UpdateUserInfoDTO } from "../dto";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 
@@ -80,11 +80,58 @@ export class UserService {
   }
 
   // Update user by ID
-  static async updateUserByID(userId: string, updateData: Partial<Omit<CreateUserDTO, 'address' | 'profile'>>) {
+  static async updateUserByID(userId: string, updateData: Partial<UpdateUserInfoDTO>) {
     const userRef = db.collection("users").doc(userId);
-    await userRef.update(updateData);
-    const updatedDoc = await userRef.get();
-    return { userId: updatedDoc.id, ...updatedDoc.data() };
+    const userDoc = await userRef.get();
+    
+    if (!userDoc.exists) return null;
+    const userData = userDoc.data();
+    if (!userData || userData.isDeleted) return null;
+
+    const batch = db.batch();
+    
+    // Update user base info
+    const userUpdate: any = {};
+    if (updateData.email) userUpdate.email = updateData.email;
+    if (typeof updateData.isUserInGroup !== 'undefined') userUpdate.isUserInGroup = updateData.isUserInGroup;
+    if (typeof updateData.isUserHead !== 'undefined') userUpdate.isUserHead = updateData.isUserHead;
+    
+    if (Object.keys(userUpdate).length > 0) {
+      batch.update(userRef, userUpdate);
+    }
+
+    // Update address if provided
+    if (updateData.address) {
+      const addressRef = db.collection("addresses").doc(userData.addressId);
+      batch.update(addressRef, updateData.address);
+    }
+
+    // Update profile if provided
+    if (updateData.profile) {
+      const profileRef = db.collection("profiles").doc(userData.profileId);
+      batch.update(profileRef, updateData.profile);
+    }
+
+    await batch.commit();
+
+    // Fetch updated user data with address and profile
+    const updatedUserDoc = await userRef.get();
+    const updatedUserData = updatedUserDoc.data();
+    
+    // Fetch updated address data
+    const addressDoc = await db.collection("addresses").doc(userData.addressId).get();
+    const addressData = addressDoc.exists ? addressDoc.data() : null;
+    
+    // Fetch updated profile data
+    const profileDoc = await db.collection("profiles").doc(userData.profileId).get();
+    const profileData = profileDoc.exists ? profileDoc.data() : null;
+
+    return {
+      userId: updatedUserDoc.id,
+      ...updatedUserData,
+      address: addressData,
+      profile: profileData
+    };
   }
 
   // Login user (email and password, exclude soft-deleted)

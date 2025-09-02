@@ -137,7 +137,7 @@ router.get("/:userId", authenticateJWT, userActivityLogger("Accounts", "Retrieve
  * @swagger
  * /api/users/{userId}:
  *   patch:
- *     summary: Update user by ID
+ *     summary: Update user information by ID
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -157,19 +157,33 @@ router.get("/:userId", authenticateJWT, userActivityLogger("Accounts", "Retrieve
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *               isUserInGroup:
  *                 type: boolean
  *               isUserHead:
  *                 type: boolean
+ *               address:
+ *                 $ref: '#/components/schemas/Address'
+ *               profile:
+ *                 $ref: '#/components/schemas/Profile'
  *     responses:
  *       200:
- *         description: User updated
+ *         description: User updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/User'
+ *                 - type: object
+ *                   properties:
+ *                     address:
+ *                       $ref: '#/components/schemas/Address'
+ *                     profile:
+ *                       $ref: '#/components/schemas/Profile'
  *       400:
- *         description: userId param is required
+ *         description: Invalid input or userId param is required
+ *       404:
+ *         description: User not found
  *       500:
  *         description: Internal server error
  */
