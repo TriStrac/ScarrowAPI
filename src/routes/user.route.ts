@@ -225,10 +225,13 @@ router.post("/login", userActivityLogger("Accounts", "Logged In"), UserControlle
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - userId
+ *               - oldPassword
  *               - newPassword
  *             properties:
- *               email:
+ *               userId:
+ *                 type: string
+ *               oldPassword:
  *                 type: string
  *               newPassword:
  *                 type: string
@@ -246,8 +249,11 @@ router.post("/login", userActivityLogger("Accounts", "Logged In"), UserControlle
  *                 userId:
  *                   type: string
  *       400:
- *         description: Email and newPassword are required
+ *         description: userId, oldPassword, and newPassword are required
+ *       401:
+ *         description: Old password is incorrect
  *       404:
+ *         description: User not found
  *         description: User not found
  *       500:
  *         description: Internal server error

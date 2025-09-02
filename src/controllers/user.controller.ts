@@ -84,12 +84,13 @@ export class UserController {
 
   static async changePassword(req: Request, res: Response) {
     try {
-      const { email, newPassword } = req.body;
-      if (!email || !newPassword) {
-        return res.status(400).json({ success: false, error: "Email and newPassword are required" });
+      const { userId, oldPassword, newPassword } = req.body;
+      if (!userId || !oldPassword || !newPassword) {
+        return res.status(400).json({ success: false, error: "userId, oldPassword, and newPassword are required" });
       }
-      const result = await UserService.changePassword(email, newPassword);
-      if (!result) return res.status(404).json({ success: false, error: "User not found" });
+      const result = await UserService.changePassword(userId, oldPassword, newPassword);
+      if (result === null) return res.status(404).json({ success: false, error: "User not found" });
+      if (result === false) return res.status(401).json({ success: false, error: "Old password is incorrect" });
       res.status(200).json({ success: true, userId: result.userId });
     } catch (err) {
       res.status(500).json({ success: false, error: "Internal server error" });

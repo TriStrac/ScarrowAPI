@@ -82,15 +82,18 @@ export class UserService {
   }
 
   // Change password by email (exclude soft-deleted)
-  static async changePassword(email: string, newPassword: string) {
-    const snapshot = await db.collection("users").where("email", "==", email).where("isDeleted", "==", false).get();
-    if (snapshot.empty) return null;
-    const userDoc = snapshot.docs[0];
-    const userRef = db.collection("users").doc(userDoc.id);
+  static async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) return null;
+    const userData = userDoc.data();
+    if (!userData || userData.isDeleted) return null;
+    const isMatch = await bcrypt.compare(oldPassword, userData.password);
+    if (!isMatch) return false;
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await userRef.update({ password: hashedPassword });
-    return { userId: userDoc.id };
-  }
+    return { userId };
+}
 
   // Soft delete user by ID
   static async softDeleteUserByID(userId: string) {
