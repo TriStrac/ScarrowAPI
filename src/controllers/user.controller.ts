@@ -84,7 +84,7 @@ export class UserController {
         process.env.JWT_SECRET as string,
         { expiresIn: "30m" }
       );
-      res.status(200).json({ success: true, token });
+      res.status(200).json({ success: true, token, userId: user.userId });
     } catch (err) {
       res.status(500).json({ success: false, error: "Internal server error" });
     }

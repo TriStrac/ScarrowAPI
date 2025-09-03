@@ -220,8 +220,12 @@ router.patch("/:userId", authenticateJWT, userActivityLogger("Accounts", "Retrie
  *               properties:
  *                 success:
  *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                   description: JWT bearer token
  *                 userId:
  *                   type: string
+ *                   description: ID of the logged in user
  *       400:
  *         description: Email and password are required
  *       401:
