@@ -179,7 +179,10 @@ export class UserService {
 
   // Check if email exists (exclude soft-deleted)
   static async doesEmailExist(email: string): Promise<boolean> {
-    const snapshot = await db.collection("users").where("email", "==", email).where("isDeleted", "==", false).get();
+    const snapshot = await db.collection("users")
+      .where("email", "==", email)
+      .where("isDeleted", "in", [false, null])
+      .get();
     return !snapshot.empty;
   }
 }

@@ -2,7 +2,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const PORT = process.env.PORT || 5000;
-const LOCAL = process.env.LOCAL || "192.168.0.138";
+const LOCAL = process.env.LOCAL || "192.168.0.137";
 const API_URL = process.env.API_URL || `http://${LOCAL}:${PORT}`;
 const isDocker = process.env.IS_DOCKER === 'true';
 const apiFiles = isDocker ? ['./dist/routes/*.js'] : ['./src/routes/*.ts'];

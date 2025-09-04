@@ -127,9 +127,9 @@ export class UserController {
 
   static async checkEmailExists(req: Request, res: Response) {
     try {
-      const { email } = req.query;
+      const { email } = req.body;
       if (!email || typeof email !== "string") {
-        return res.status(400).json({ error: "Email is required as query param" });
+        return res.status(400).json({ error: "Email is required in request body" });
       }
       const exists = await UserService.doesEmailExist(email);
       res.status(200).json({ exists });

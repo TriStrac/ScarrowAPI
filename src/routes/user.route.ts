@@ -342,18 +342,22 @@ router.get("/deleted",authenticateJWT, userActivityLogger("Accounts", "Retrieved
 /**
  * @swagger
  * /api/users/emailExists:
- *   get:
+ *   post:
  *     summary: Check if email exists (not deleted)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: email
- *         schema:
- *           type: string
- *         required: true
- *         description: User email to check
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Email existence result
@@ -365,11 +369,11 @@ router.get("/deleted",authenticateJWT, userActivityLogger("Accounts", "Retrieved
  *                 exists:
  *                   type: boolean
  *       400:
- *         description: Email is required
+ *         description: Email is required in request body
  *       500:
  *         description: Internal server error
  */
-router.get("/emailExists", authenticateJWT, UserController.checkEmailExists);
+router.post("/emailExists", authenticateJWT, UserController.checkEmailExists);
 
 export default router;
 
